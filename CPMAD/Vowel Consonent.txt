@@ -1,0 +1,57 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const Login());
+}
+
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  String text1 = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Login"),
+        ),
+        body: Column(
+          children: [
+            Text("Username"),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: TextField(
+                onChanged: (text){
+                  updateContent(text);
+                },
+
+                decoration: InputDecoration(
+                  hintText: "Enter number",
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+
+                ),
+              ),
+
+            ),
+            Text(text1),
+          ],
+        ),
+      ),
+    );
+  }
+  updateContent(String text){
+    setState(() {
+      if(text=="a"||text=="e"||text=="i"||text=="o"||text=="u"){
+        text1 = "Vowel";
+      } else {
+        text1 = "Consonent";
+      }
+    });
+  }
+}
