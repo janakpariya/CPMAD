@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(Home());
+
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ListView',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ListView'),
+      ),
+      body: Container(
+        child: ListView(
+          children: [
+
+            ListTile(
+              title: Text('List1'),
+              subtitle: Text('List1 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.purple,
+            ),
+
+            ListTile(
+              title: Text('List2'),
+              subtitle: Text('List2 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.blue,
+            ),
+
+            ListTile(
+              title: Text('List3'),
+              subtitle: Text('List3 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.purple,
+            ),
+
+            ListTile(
+              title: Text('List4'),
+              subtitle: Text('List4 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.blue,
+            ),
+
+            ListTile(
+              title: Text('List5'),
+              subtitle: Text('List5 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.purple,
+            ),
+
+            ListTile(
+              title: Text('List6'),
+              subtitle: Text('List6 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.blue,
+            ),
+
+            ListTile(
+              title: Text('List7'),
+              subtitle: Text('List7 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.purple,
+            ),
+
+            ListTile(
+              title: Text('List8'),
+              subtitle: Text('List8 is Created'),
+              leading: Icon(Icons.list),
+              trailing: Icon(Icons.star_border),
+              iconColor: Colors.blue,
+            ),
+
+          ],
+        )
+      )
+    );
+  }
+}
