@@ -1,0 +1,47 @@
+import 'package:flutter/material.dart';
+
+class Print extends StatelessWidget {
+
+  String? name, gender, dob, age, time, send_email, remember;
+  Print({
+    required this.name,
+    required this.gender,
+    required this.dob,
+    required this.age,
+    required this.time,
+    required this.send_email,
+    required this.remember,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Display"),
+      ),
+        body: SafeArea(
+          // padding: EdgeInsets.all(40),
+          child: ListView(
+            children: [
+              Text('Form Data', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
+
+              Text('Name : ${name}', style: TextStyle(fontSize: 18),),
+              Text('Gender : ${gender}', style: TextStyle(fontSize: 18),),
+              Text('Birth date : ${dob}', style: TextStyle(fontSize: 18),),
+              Text('Age : ${age}', style: TextStyle(fontSize: 18),),
+              Text('Time : ${time}', style: TextStyle(fontSize: 18),),
+              Text('Status: ${send_email}', style: TextStyle(fontSize: 18),),
+              Text('Check : ${remember}', style: TextStyle(fontSize: 18),),
+
+            ],
+          ),
+        ),
+      );
+  }
+}
+

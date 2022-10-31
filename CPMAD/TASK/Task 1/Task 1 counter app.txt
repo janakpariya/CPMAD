@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Task 1',
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var a = 0;
+
+  void _starting() async {
+    final prefs = await SharedPreferences.getInstance();
+    final int? counter = prefs.getInt('count');
+    setState(() {
+      a = counter!;
+    });
+  }
+
+  @override
+  void initState(){
+    _starting();
+    super.initState();
+  }
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Task 1'),
+      ),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+
+          FloatingActionButton(onPressed: _decrementCount,child: Icon(Icons.remove),),
+
+          Center(child: Text("$a", style: TextStyle(fontSize: 30),),),
+
+          FloatingActionButton(onPressed: _incrementCount,child: Icon(Icons.add),),
+
+        ],
+      ),
+    );
+  }
+
+  void _incrementCount(){
+    setState(() {
+      a++;
+    });
+    _loading();
+  }
+
+  void _decrementCount(){
+    setState(() {
+      a--;
+    });
+    _loading();
+  }
+
+  void _loading() async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('count',a);
+    }
+}
