@@ -1,0 +1,103 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Task 3',
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  List a =[] ;
+
+  TextEditingController _notes = TextEditingController();
+
+  void _saved() async{
+    // Obtain shared preferences.
+    final prefs = await SharedPreferences.getInstance();
+    final String? action = prefs.getString('todo');
+    setState(() {
+      a.add(action);
+    });
+  }
+
+  @override
+  void initState() {
+
+    _saved();
+    super.initState();
+  }
+
+  @override
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Task 3'),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            controller: _notes,
+            decoration: InputDecoration(
+              hintText: 'Enter notes',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          ElevatedButton(onPressed: () {
+            _print();
+          }, child: Text('Add')),
+          Flexible(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: a.length,
+              itemBuilder: (BuildContext context, int index){
+                return ListTile(
+                  title: Text('${a[index]}'),
+                  trailing: GestureDetector(child: Icon(Icons.delete),onTap: (){
+                    setState(() {
+                      a.removeAt(index);
+                    });
+                  },),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _print() async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('todo', _notes.text);
+    // print("${_notes.text}");
+    // setState(() {
+    //   a.add(_notes.text);
+    //   _notes.text="";
+    // });
+    // final prefs = await SharedPreferences.getInstance();
+    final String? action = prefs.getString('todo');
+    setState(() {
+      a.add(action);
+    });
+    _notes.text="";
+  }
+}
