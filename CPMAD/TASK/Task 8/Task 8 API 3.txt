@@ -1,0 +1,131 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var users = [];
+
+  @override
+  void initState() {
+    _getAPIData();
+    print(users);
+    super.initState();
+  }
+
+  void _getAPIData() async {
+    var url = Uri.parse('https://dummyjson.com/users');
+    var response = await http.get(url);
+    var jsonData = jsonDecode(response.body);
+    print(jsonData);
+    var user = jsonData['users'];
+    //
+    for(var i in user) {
+      venues p1 = venues(i["firstName"], i["id"], i["lastName"], i["image"]);
+      setState(() {
+        users.add(p1);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.shade500,
+              Colors.greenAccent.shade400,
+              Colors.yellowAccent.shade400
+            ],
+          ),
+        ),
+        padding: EdgeInsets.all(20),
+
+        child: SafeArea(
+          child: Column(
+            children: [
+
+
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                alignment: Alignment.topLeft,
+                child: Text('USER', style: TextStyle(fontSize: 24, color: Colors.white),),
+              ),
+
+              SizedBox(height: height * 0.02,),
+
+              Flexible(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: users.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Image.network('${users[index]._image}'),
+                            ),
+
+                            title: Text('${users[index]._firstname} ${users[index]._lastname}',)
+                        ),
+                      );
+                    }
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class venues {
+  var firstName;
+  var id;
+  var lastname;
+  var image;
+
+
+  venues(this.firstName, this.id, this.lastname, this.image);
+
+  get _firstname { return firstName; }
+  get _id {return id; }
+  get _lastname { return lastname; }
+  get _image { return image; }
+
+
+
+}
