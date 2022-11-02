@@ -1,0 +1,130 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var users = [];
+
+  @override
+  void initState() {
+    _getAPIData();
+    print(users);
+    super.initState();
+  }
+
+  void _getAPIData() async {
+    var url = Uri.parse('https://coinmap.org/api/v1/venues/');
+    var response = await http.get(url);
+    var jsonData = jsonDecode(response.body);
+    var products = jsonData['venues'];
+
+    for(var i in products) {
+      venues p1 = venues(i["id"], i["lat"], i["lon"], i["category"], i["name"], i["created_on"], i["geolocation_degrees"]);
+      setState(() {
+        users.add(p1);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.shade500,
+              Colors.greenAccent.shade400,
+              Colors.yellowAccent.shade400
+            ],
+          ),
+        ),
+        padding: EdgeInsets.all(20),
+
+        child: SafeArea(
+          child: Column(
+            children: [
+
+
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                alignment: Alignment.topLeft,
+                child: Text('venues', style: TextStyle(fontSize: 24, color: Colors.white),),
+              ),
+
+              SizedBox(height: height * 0.02,),
+
+              Flexible(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: users.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text('${users[index]._name!}',),
+                        ),
+                      );
+                    }
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class venues {
+  var id;
+  var lat;
+  var lon;
+  var category;
+  var name;
+  var created_on;
+  var geolocation_degrees;
+
+  venues(this.id, this.lat, this.lon, this.category, this.name, this.created_on, this.geolocation_degrees);
+
+  get _id { return id; }
+  get _lat {return lat; }
+  get _lon { return lon; }
+  get _category {return category; }
+  get _name { return name; }
+  get _created_on {return created_on; }
+  get _geolocation_degrees { return geolocation_degrees; }
+
+
+
+}
