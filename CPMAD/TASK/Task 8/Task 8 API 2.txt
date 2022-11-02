@@ -1,0 +1,132 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var users = [];
+
+  @override
+  void initState() {
+    _getAPIData();
+    print(users);
+    super.initState();
+  }
+
+  void _getAPIData() async {
+    var url = Uri.parse('https://api.github.com/users/hadley/orgs');
+    var response = await http.get(url);
+    var jsonData = jsonDecode(response.body);
+    print(jsonData);
+    // var orgs = jsonData['orgs'];
+    //
+    for(var i in jsonData) {
+      venues p1 = venues(i["login"], i["id"], i["node_id"], i["url"], i["repos_url"], i["event_url"], i["hooks_url"]);
+      setState(() {
+        users.add(p1);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.shade500,
+              Colors.greenAccent.shade400,
+              Colors.yellowAccent.shade400
+            ],
+          ),
+        ),
+        padding: EdgeInsets.all(20),
+
+        child: SafeArea(
+          child: Column(
+            children: [
+
+
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                alignment: Alignment.topLeft,
+                child: Text('ORGS', style: TextStyle(fontSize: 24, color: Colors.white),),
+              ),
+
+              SizedBox(height: height * 0.02,),
+
+              Flexible(
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: users.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text('${users[index]._login}',),
+                          subtitle: Text('${users[index]._id}'),
+                        ),
+                      );
+                    }
+                ),
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class venues {
+  var login;
+  var id;
+  var node_id;
+  var url;
+  var repos_url;
+  var event_url;
+  var hooks_url;
+
+  venues(this.login, this.id, this.node_id, this.url, this.repos_url, this.event_url, this.hooks_url);
+
+  get _login { return login; }
+  get _id {return id; }
+  get _node_id { return node_id; }
+  get _url {return url; }
+  get _repos_url { return repos_url; }
+  get _event_url {return event_url; }
+  get _hooks_url { return hooks_url; }
+
+
+
+}
