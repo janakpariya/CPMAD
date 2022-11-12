@@ -1,0 +1,191 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Home(),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var cityName = "", weather_desc = "", main_temp = "", main_pressure = "", main_humidity = "", wind_speed = "", wind_def = "", wind_gust = "", sys_country = "";
+
+  TextEditingController a = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Weather App')),
+      body: Container(
+        padding: EdgeInsets.all(26),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            SizedBox(height: height * 0.03,),
+
+            Container(
+              child: TextField(
+                controller: a,
+                style: TextStyle(fontSize: 20, color: Colors.blue),
+                cursorColor: Colors.blue,
+                cursorWidth: 1.5,
+
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: Icon(Icons.search, color: Colors.blue,),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+
+            Center(
+              child: ElevatedButton(onPressed: (){
+                _getAPIData(a.text);
+              }, child: Text('Search')),
+            ),
+
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+
+                  Row(
+                    children: [
+
+                      Expanded(
+                        child: Container(
+                          height: height * 0.13,
+
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+                                  Text('${cityName}', style: TextStyle(fontSize: 15),),
+
+                                  SizedBox(height: height * 0.006,),
+
+                                  Text('${main_temp}', style: TextStyle(fontSize: 30),),
+                                  Text('${weather_desc}'),
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  SizedBox(height: height * 0.02,),
+
+                  Container(
+                    width: width * 0.07,
+                    height: height * 0.13,
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Text('Wind', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            SizedBox(height: height * 0.006,),
+                            Text('Speed: ${wind_speed}',),
+                            Text('degree: ${wind_def}',),
+                            Text('gust: ${wind_gust}'),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: height * 0.02,),
+
+                  Container(
+                    width: width * 0.07,
+                    height: height * 0.13,
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+
+                            Text('Main', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                            SizedBox(height: height * 0.006,),
+                            Text('Pressure: ${main_pressure}',),
+                            Text('Humidity: ${main_humidity} ',),
+                            Text('country: ${sys_country}'),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _getAPIData(String city) async {
+
+    var url = Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=4a63c23b271793e10feb07b3118f48d0');
+    var response = await http.get(url);
+    var jsonData = jsonDecode(response.body);
+    var jsonStatus = jsonDecode('${response.statusCode}');
+
+    var apiCity = jsonData['name'];
+    if(jsonStatus == 200) {
+
+      Map<String, dynamic> map = jsonDecode(response.body);
+      var c = map["main"]["temp"].toString();
+      var b = (double.parse(c)).toStringAsFixed(2);
+      setState(() {
+        cityName = apiCity;
+
+        weather_desc = map["weather"][0]["description"];
+        wind_def = map["wind"]["deg"].toString();
+        wind_gust = map["wind"]["gust"].toString();
+        sys_country = map["sys"]["country"].toString();
+        main_temp = b;
+        main_pressure = map["main"]["pressure"].toString();
+        main_humidity = map["main"]["humidity"].toString();
+        wind_speed = map["wind"]["speed"].toString();
+
+      });
+    }
+  }
+}
