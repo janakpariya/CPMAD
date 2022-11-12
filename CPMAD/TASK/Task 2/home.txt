@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class home extends StatefulWidget {
+  const home({Key? key}) : super(key: key);
+
+  @override
+  State<home> createState() => _dashboardState();
+}
+
+class _dashboardState extends State<home> {
+
+  var username = "";
+
+  void loginData() async {
+    var prefs = await SharedPreferences.getInstance();
+    var items = prefs.getStringList('item');
+    setState(() {
+      username = items![0];
+    });
+  }
+
+  @override
+  void initState() {
+    loginData();
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home screen'),
+      ),
+      body: Container(
+        child: Center(
+          child: Text(
+            "Welcome ${username}",
+            style: TextStyle(
+              fontSize: 30,
+              color: Colors.blue.shade900,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
