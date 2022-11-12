@@ -1,0 +1,357 @@
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+void main() => runApp(Main());
+
+class Main extends StatelessWidget {
+  const Main({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: login(),
+    );
+  }
+}
+
+
+
+class login extends StatefulWidget {
+  const login({Key? key}) : super(key: key);
+
+  @override
+  State<login> createState() => _loginState();
+}
+
+class _loginState extends State<login> {
+
+  var error = "";
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+        body: Container(
+          padding: EdgeInsets.all(25),
+
+          child: SafeArea(
+            child: ListView(
+              children: [
+
+                SizedBox(height: height * 0.15,),
+
+                Text('Login', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.blue,),),
+
+                SizedBox(height: height * 0.06,),
+
+                TextFormField(
+                  controller: email,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 18,
+                  ),
+                  cursorColor: Colors.blue,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.email, color: Colors.blue,),
+                    labelText: 'Email',
+                    labelStyle: TextStyle(fontSize: 17, color: Colors.blue),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                SizedBox(height: height * 0.02,),
+
+                TextFormField(
+                  controller: password,
+                  obscureText: true,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 18,
+                  ),
+                  cursorColor: Colors.blue,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.password, color: Colors.blue,),
+                    labelText: 'Password',
+                    labelStyle: TextStyle(fontSize: 17, color: Colors.blue),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                SizedBox(height: height * 0.01,),
+
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _isLogin();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 60.0, right: 60.0, top: 13.0, bottom: 13.0),
+                      child: Text('Login', style: TextStyle(fontSize: 19,),),
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: height * 0.01,),
+
+                InkWell(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => register(),),);
+                  },
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "Register",
+                      style: TextStyle(color: Colors.blue[900], fontSize: 15),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+  }
+
+  Future<void> _isLogin() async {
+    var url = Uri.parse('http://192.168.137.1/API/pages/login.php');
+    var response = await http.post(url, body: {
+      "email" : email.text,
+      "password" : password.text,
+    });
+    var jsonData = jsonDecode(response.body);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email_login', email.text);
+
+    if(jsonData == "success") {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => dashboard(),),);
+    } else {
+      Fluttertoast.showToast(
+          msg: "Your Email and Password is Incorrect",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.blue,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+
+  }
+
+}
+
+
+class dashboard extends StatefulWidget {
+  dashboard({Key? key}) : super(key: key);
+
+  @override
+  State<dashboard> createState() => _dashboardState();
+}
+
+class _dashboardState extends State<dashboard> {
+
+  var email = "";
+
+  @override
+  void initState() {
+    _emailShared();
+    super.initState();
+  }
+
+  void _emailShared() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? emailS = prefs.getString('email_login');
+    setState(() {
+      email = emailS!;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dashboard'),
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(35),
+          child: Center(child: Text(email, style: TextStyle(fontSize: 20),),),
+        ),
+      ),
+    );
+  }
+}
+
+
+class register extends StatefulWidget {
+  const register({Key? key}) : super(key: key);
+  @override
+  State<register> createState() => _registerState();
+}
+
+class _registerState extends State<register> {
+
+  TextEditingController _username = TextEditingController();
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final width = size.width;
+    final height = size.height;
+
+    return Scaffold(
+      body: Container(
+        padding: EdgeInsets.all(35),
+        child: SafeArea(
+          child: ListView(
+            children: [
+
+              SizedBox(height: height * 0.10,),
+
+              Text('Register', style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.blue[900],),),
+
+              SizedBox(height: height * 0.04,),
+
+              TextField(
+                controller: _username,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18,
+                ),
+                cursorColor: Colors.blue,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.supervised_user_circle, color: Colors.blue,),
+                  labelText: 'Username',
+                  labelStyle: TextStyle(fontSize: 17, color: Colors.blue),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: height * 0.02,),
+
+              TextField(
+                controller: _email,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18,
+                ),
+                cursorColor: Colors.blue,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.email, color: Colors.blue,),
+                  labelText: 'Email',
+                  labelStyle: TextStyle(fontSize: 17, color: Colors.blue),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: height * 0.02,),
+
+              TextField(
+                controller: _password,
+                obscureText: true,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 18,
+                ),
+                cursorColor: Colors.blue,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.password, color: Colors.blue,),
+                  labelText: 'Password',
+                  labelStyle: TextStyle(fontSize: 17, color: Colors.blue),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(height: height * 0.02,),
+
+              Container(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _sendData();
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 40.0, right: 40.0, top: 13.0, bottom: 13.0),
+                    child: Text('Send', style: TextStyle(fontSize: 19,),),
+                  ),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll<Color>(Colors.blue),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: height * 0.01,),
+
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Login',
+                    style: TextStyle(color: Colors.blue[900], fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _sendData() async {
+      var url = Uri.parse('http://192.168.137.1/API/pages/create.php');
+      var response = await http.post(url, body: {
+        'username' : _username.text, 'email' : _email.text,
+        'password' : _password.text
+      });
+
+      var jsonData = jsonDecode(response.body);
+      if(jsonData == "success") {
+        Fluttertoast.showToast(
+            msg: "Your information has been recorded",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.blue,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+
+        _username.text = ""; _email.text = ""; _password.text = "";
+        Navigator.push(context, MaterialPageRoute(builder: (context) => login(),),);
+
+      } else {
+        Fluttertoast.showToast(
+            msg: "Something Wrong Please Try Again.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.blue,
+            textColor: Colors.white,
+            fontSize: 16.0
+        );
+      }
+    }
+  }
